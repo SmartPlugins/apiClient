@@ -1,2 +1,2 @@
-nuget restore ../src/NJsonSchema.sln
-msbuild ../src/NJsonSchema.sln /p:Configuration=Release /t:rebuild
+nuget restore ../src/SmartPlugin.ApiClient.sln
+msbuild ../src/SmartPlugin.ApiClient.sln /p:Configuration=Release /t:rebuild
