@@ -24,8 +24,6 @@ namespace SmartPlugin.ApiClient
     [Serializable]
     public class ApiClientException : Exception
     {
-        private string v;
-
         public int StatusCode { get; private set; }
 
         public string Response { get; private set; }
