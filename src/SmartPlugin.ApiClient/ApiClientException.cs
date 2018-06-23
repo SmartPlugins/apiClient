@@ -27,7 +27,7 @@ namespace SmartPlugin.ApiClient
 
         public string Response { get; private set; }
 
-        public System.Collections.Generic.Dictionary<string, IEnumerable<string>> Headers { get; private set; }
+        public Dictionary<string, IEnumerable<string>> Headers { get; private set; }
 
         public ApiClientException()
         {
