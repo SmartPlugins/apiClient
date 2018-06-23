@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.27703.2035
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartPlugin.ApiClient", "SmartPlugin.ApiClient\SmartPlugin.ApiClient.csproj", "{E7897B45-00E1-45A1-9FF5-9DB1D49BBB2C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartPlugin.ApiClient.HttpClient", "..\SmartPlugin.ApiClient.HttpClient\SmartPlugin.ApiClient.HttpClient.csproj", "{CEDACB09-C077-4CED-8E08-C19A1E5511CC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartPlugin.ApiClient.HttpClient", "SmartPlugin.ApiClient.HttpClient\SmartPlugin.ApiClient.HttpClient.csproj", "{5D94D29D-30DA-4F2B-9638-FA8A5DD4A056}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{E7897B45-00E1-45A1-9FF5-9DB1D49BBB2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E7897B45-00E1-45A1-9FF5-9DB1D49BBB2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E7897B45-00E1-45A1-9FF5-9DB1D49BBB2C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{CEDACB09-C077-4CED-8E08-C19A1E5511CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{CEDACB09-C077-4CED-8E08-C19A1E5511CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{CEDACB09-C077-4CED-8E08-C19A1E5511CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{CEDACB09-C077-4CED-8E08-C19A1E5511CC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5D94D29D-30DA-4F2B-9638-FA8A5DD4A056}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5D94D29D-30DA-4F2B-9638-FA8A5DD4A056}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5D94D29D-30DA-4F2B-9638-FA8A5DD4A056}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5D94D29D-30DA-4F2B-9638-FA8A5DD4A056}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
