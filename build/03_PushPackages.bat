@@ -6,3 +6,4 @@ REM nuget.exe push Packages/SmartPlugin.ApiClient.%version%.nupkg %apiKey%
 REM nuget.exe push Packages/SmartPlugin.ApiClient.HttpClient.%version%.nupkg %apiKey%
 dotnet nuget push ../Publish/nupkgs/SmartPlugin.ApiClient.%version%.nupkg -k %apiKey% -s https://api.nuget.org/v3/index.json
 dotnet nuget push ../Publish/nupkgs/SmartPlugin.ApiClient.HttpClient.%version%.nupkg -k %apiKey% -s https://api.nuget.org/v3/index.json
+dotnet nuget push ../Publish/nupkgs/SmartPlugin.ApiClient.CodeGen.%version%.nupkg -k %apiKey% -s https://api.nuget.org/v3/index.json
