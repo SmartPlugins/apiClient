@@ -12,8 +12,7 @@ namespace SmartPlugin.ApiClient.Model
         {
             parameters?.ToList().ForEach(p =>
             {
-                if (p != null)
-                    AddParameter(p, p.Binding);
+                AddParameter(p);
             });
         }
 
@@ -26,13 +25,16 @@ namespace SmartPlugin.ApiClient.Model
                 base[binding].Add(new Parameter(name, binding, value, typeof(T)));
         }
 
-        public void AddParameter(Parameter parameter, BindingSource binding = BindingSource.Path)
+        public void AddParameter(Parameter parameter)
         {
-            if (!base.ContainsKey(binding))
-                base[binding] = new List<Parameter>();
+            if (parameter != default)
+            {
+                if (!base.ContainsKey(parameter.Binding))
+                    base[parameter.Binding] = new List<Parameter>();
 
-            if (parameter.Value != default)
-                base[binding].Add(parameter);
+                if (parameter.Value != default)
+                    base[parameter.Binding].Add(parameter);
+            }
         }
     }
 }
