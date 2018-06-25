@@ -13,6 +13,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BaseClient", "BaseClient", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartPlugin.ApiClient.CodeGen", "CodeGen\SmartPlugin.ApiClient.CodeGen\SmartPlugin.ApiClient.CodeGen.csproj", "{DCCE736F-70C5-48AA-8D7A-05235C25C59F}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{120DFA2C-A6FE-43AD-A5AF-8EB6ACEDBD16}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Build", "Build", "{B62632A0-2DF6-43FD-AF0D-F60CC3AAC3AD}"
+	ProjectSection(SolutionItems) = preProject
+		..\build\01_Build.bat = ..\build\01_Build.bat
+		..\build\02_CreatePackages.bat = ..\build\02_CreatePackages.bat
+		..\build\03_PushPackages.bat = ..\build\03_PushPackages.bat
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{DC19F495-6052-4529-89B8-3CF5A09A37C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,7 +49,10 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{E7897B45-00E1-45A1-9FF5-9DB1D49BBB2C} = {58C72EAB-85A7-40C0-A4E2-393E4F45B259}
 		{5D94D29D-30DA-4F2B-9638-FA8A5DD4A056} = {58C72EAB-85A7-40C0-A4E2-393E4F45B259}
+		{E7FC8772-9FAC-4C32-ACC3-8198B63D51A0} = {120DFA2C-A6FE-43AD-A5AF-8EB6ACEDBD16}
+		{58C72EAB-85A7-40C0-A4E2-393E4F45B259} = {120DFA2C-A6FE-43AD-A5AF-8EB6ACEDBD16}
 		{DCCE736F-70C5-48AA-8D7A-05235C25C59F} = {E7FC8772-9FAC-4C32-ACC3-8198B63D51A0}
+		{B62632A0-2DF6-43FD-AF0D-F60CC3AAC3AD} = {DC19F495-6052-4529-89B8-3CF5A09A37C2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A1F160D3-626D-43FE-8EAE-CB7891C64DCC}

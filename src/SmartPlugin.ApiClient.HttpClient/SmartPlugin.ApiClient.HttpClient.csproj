@@ -7,6 +7,10 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Authors>SmartPlugin</Authors>
     <Company>SmartPlugin</Company>
+    <PackageProjectUrl>https://github.com/SmartPlugins/apiClient</PackageProjectUrl>
+    <Copyright>© SmartPlugins. All rights reserved.</Copyright>
+    <Description>Open Api client implementation with HttpClient</Description>
+    <PackageTags>SmartPlugin ApiClient (HttpClient)</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>

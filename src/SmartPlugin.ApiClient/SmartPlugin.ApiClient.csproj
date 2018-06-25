@@ -6,6 +6,10 @@
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <Company>SmartPlugins</Company>
     <Authors>SmartPlugin</Authors>
+    <Copyright>© SmartPlugins. All rights reserved.</Copyright>
+    <PackageProjectUrl>https://github.com/SmartPlugins/apiClient</PackageProjectUrl>
+    <PackageTags>SmartPlugin ApiClient</PackageTags>
+    <Description>OpenApi client base construct</Description>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
