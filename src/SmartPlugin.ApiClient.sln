@@ -11,7 +11,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "CodeGen", "CodeGen", "{E7FC
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BaseClient", "BaseClient", "{58C72EAB-85A7-40C0-A4E2-393E4F45B259}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SmartPlugin.ApiClient.CodeGen", "CodeGen\SmartPlugin.ApiClient.CodeGen\SmartPlugin.ApiClient.CodeGen.csproj", "{DCCE736F-70C5-48AA-8D7A-05235C25C59F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmartPlugin.ApiClient.CodeGen", "CodeGen\SmartPlugin.ApiClient.CodeGen\SmartPlugin.ApiClient.CodeGen.csproj", "{DCCE736F-70C5-48AA-8D7A-05235C25C59F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{120DFA2C-A6FE-43AD-A5AF-8EB6ACEDBD16}"
 EndProject

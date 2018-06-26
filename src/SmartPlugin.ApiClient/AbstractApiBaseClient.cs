@@ -73,7 +73,7 @@ namespace SmartPlugin.ApiClient
                 {
                     url.Replace($"{{{p.Name}}}", EscapeData(p.Value.ToString()));
                 });
-            if (parameters?.ContainsKey(BindingSource.Query) ?? false)
+            if ((parameters?.ContainsKey(BindingSource.Query) ?? false)&& parameters[BindingSource.Query].Count>0 )
             {
                 var qryString = parameters[BindingSource.Query].Select(p => $"{p.Name}={EscapeData(p.Value.ToString())}").Aggregate((c, n) => $"{c}&{n}");
                 url.Append($"?{qryString}");

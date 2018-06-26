@@ -1,66 +1,67 @@
 ﻿using System;
-using System.Threading;
-using System.Net;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Newtonsoft.Json;
-using SmartPlugin.ApiClient.Enums;
-using SmartPlugin.ApiClient.Model;
-using System.Text;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Newtonsoft.Json;
+using SmartPlugin.ApiClient.Enums;
 using SmartPlugin.ApiClient.Extensions;
+using SmartPlugin.ApiClient.Model;
 
-namespace SmartPlugin.ApiClient
+namespace SmartPlugin.ApiClient.ASPNETWebApi
 {
-    public partial class ApiBaseClient : AbstractApiBaseClient
+    namespace SmartPlugin.ApiClient
     {
-        private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
-        protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
-
-
-        partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings);
-
-        partial void PrepareRequest(HttpClient client, HttpRequestMessage request, string url);
-        partial void PrepareRequest(HttpClient client, HttpRequestMessage request, StringBuilder urlBuilder);
-        partial void ProcessResponse(HttpClient client, HttpResponseMessage response);
-
-        protected override void InitializeClient()
+        public partial class ApiBaseClient : AbstractApiBaseClient
         {
-            _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(() =>
+            private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
+            protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
+
+
+            partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings);
+
+            partial void PrepareRequest(HttpClient client, HttpRequestMessage request, string url);
+            partial void PrepareRequest(HttpClient client, HttpRequestMessage request, StringBuilder urlBuilder);
+            partial void ProcessResponse(HttpClient client, HttpResponseMessage response);
+
+            protected override void InitializeClient()
             {
-                var settings = new Newtonsoft.Json.JsonSerializerSettings();
-                UpdateJsonSerializerSettings(settings);
-                return settings;
-            });
-        }
-
-        protected async override Task<T> ExecuteAsync<T>(Parameters parameters, CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var opInfo = new StackTrace().GetOperationInfo();
-
-            HttpVerb action = opInfo.ActionInfo.Action;
-            string actionTemplate = opInfo.ActionInfo.Template;
-            return await ExecuteAsync<T>(action, actionTemplate, parameters, cancellationToken);
-        }
-
-        protected async override Task<T> ExecuteAsync<T>(HttpVerb action, string actionTemplate, Parameters parameters,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-            var opInfo = new StackTrace().GetOperationInfo();
-            var methodName = opInfo.MetaInfo.Name;
-            var urlBuilder = GetRequestUrl(actionTemplate, parameters);
-
-            var client = default(HttpClient);
-            try
-            {
-                using (client = Config.WindowsAuthentication
-                    ? new HttpClient(new HttpClientHandler() {UseDefaultCredentials = true})
-                    : new HttpClient())
+                _settings = new System.Lazy<Newtonsoft.Json.JsonSerializerSettings>(() =>
                 {
+                    var settings = new Newtonsoft.Json.JsonSerializerSettings();
+                    UpdateJsonSerializerSettings(settings);
+                    return settings;
+                });
+            }
 
+            protected async override Task<T> ExecuteAsync<T>(Parameters parameters, CancellationToken cancellationToken = default(CancellationToken))
+            {
+                var opInfo = new StackTrace().GetOperationInfo();
+
+                HttpVerb action = opInfo.ActionInfo.Action;
+                string actionTemplate = opInfo.ActionInfo.Template;
+                return await ExecuteAsync<T>(action, actionTemplate, parameters, cancellationToken);
+            }
+
+            protected async override Task<T> ExecuteAsync<T>(HttpVerb action, string actionTemplate, Parameters parameters,
+                CancellationToken cancellationToken = default(CancellationToken))
+            {
+                var opInfo = new StackTrace().GetOperationInfo();
+                var methodName = opInfo.MetaInfo.Name;
+                var urlBuilder = GetRequestUrl(actionTemplate, parameters);
+
+
+                HttpClientHandler handler = new HttpClientHandler();
+                handler.UseDefaultCredentials = true;
+
+                var client = new HttpClient();
+                try
+                {
                     using (var request = new HttpRequestMessage())
                     {
                         //Stuffing header parameters
@@ -85,7 +86,7 @@ namespace SmartPlugin.ApiClient
                         {
                             if ((parameters[BindingSource.Body]?.Count ?? 0) > 1)
                                 throw new ApiClientException(
-                                    $"Target of invocation exception in calling {methodName} due to an error: 'API call has multiple parameter bindings to the body element.'");
+                                    $"Target of invocation exception in calling {methodName} due to an error: {"API call has multiple parameters binding to the Body element."}");
 
                             var p = parameters[BindingSource.Body]?.ToList().FirstOrDefault();
                             var content =
@@ -133,7 +134,7 @@ namespace SmartPlugin.ApiClient
                                 {
                                     throw new ApiClientException(
                                         $"Target of invocation exception in calling {methodName} due to an error: {"Could not deserialize the response body."}",
-                                        (int) response.StatusCode, responseData, headers, ex);
+                                        (int)response.StatusCode, responseData, headers, ex);
                                 }
                             }
                             else if (response.StatusCode != HttpStatusCode.OK &&
@@ -143,8 +144,8 @@ namespace SmartPlugin.ApiClient
                                     ? null
                                     : await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                                 throw new ApiClientException(
-                                    $"Target of invocation exception in calling {methodName} due to an error: {"The HTTP status code of the response was not expected ("}{Enum.GetName(typeof(HttpStatusCode), response.StatusCode)}:{(int) response.StatusCode}).",
-                                    (int) response.StatusCode, responseData, headers, null);
+                                    $"Target of invocation exception in calling {methodName} due to an error: {"The HTTP status code of the response was not expected ("}{Enum.GetName(typeof(HttpStatusCode), response.StatusCode)}:{(int)response.StatusCode}).",
+                                    (int)response.StatusCode, responseData, headers, null);
                             }
 
                             return default(T);
@@ -156,11 +157,11 @@ namespace SmartPlugin.ApiClient
                         }
                     }
                 }
-            }
-            finally
-            {
-                if (client != null)
-                    client.Dispose();
+                finally
+                {
+                    if (client != null)
+                        client.Dispose();
+                }
             }
         }
     }

@@ -51,9 +51,12 @@ namespace SmartPlugin.ApiClient.CodeGen
 
                 _apiSpecDoc.Paths.ToList().ForEach(p =>
                 {
-                    var clientName = p.Key.Substring(1, p.Key.IndexOf('/', 1));
-                    Client client;
-                    client = clients?.Keys?.FirstOrDefault(c => c.Name == clientName) ?? (Client) _apiSpecDoc.Tags.FirstOrDefault(c => c.Name == clientName);
+                    var clientName = p.Key.Substring(1, (p.Key.IndexOf('/', 1)==-1?p.Key.Length: p.Key.IndexOf('/', 1))-1);
+                    Client client=clients?.Keys?.FirstOrDefault(c => c.Name == clientName);
+                      client = clients?.Keys?.FirstOrDefault(c => c.Name == clientName) ?? new Client(_apiSpecDoc.Tags.FirstOrDefault(c => c.Name == clientName))
+                      {
+                          //RouteTemplate = 
+                      };
 
                 });
 
@@ -68,6 +71,20 @@ namespace SmartPlugin.ApiClient.CodeGen
 
     public class Client:OpenApiTag
     {
+        public Client()
+        {
+        }
+
+        public Client(OpenApiTag tag)
+        {
+            Name = tag.Name;
+            Description = tag.Description;
+            Extensions = tag.Extensions;
+            ExternalDocs = tag.ExternalDocs;
+            Reference = tag.Reference;
+            UnresolvedReference = tag.UnresolvedReference;
+        }
+
         public string RouteTemplate { get; set; }
         public string Comments { get; set; }
     }

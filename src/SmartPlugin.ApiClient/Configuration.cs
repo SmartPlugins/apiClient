@@ -40,13 +40,17 @@ namespace SmartPlugin.ApiClient
             DefaultRoute = "api/[client]";
         }
         [JsonProperty("BaseUrl")]
-        internal string BaseUrl { get; set; }
+        public string BaseUrl { get; internal set; }
+
+        [JsonProperty("WindowsAuthentication")]
+        public bool WindowsAuthentication { get; internal set; } = true;
+
         [JsonProperty("ClientAppCode")]
-        internal string ClientAppCode { get; set; }
+        public string ClientAppCode { get; internal set; }
         [JsonProperty("DefaultRoute")]
-        internal string DefaultRoute { get; set; }
+        public string DefaultRoute { get; internal set; }
         [JsonProperty("Routes")]
-        internal Route[] Routes { get; set; }
+        public Route[] Routes { get; internal  set; }
     }
 
     public sealed class Route
