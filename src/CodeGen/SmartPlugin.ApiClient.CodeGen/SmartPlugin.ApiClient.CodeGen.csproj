@@ -18,6 +18,8 @@
     <PackageReference Include="Microsoft.OpenApi" Version="1.0.1" />
     <PackageReference Include="Microsoft.OpenApi.Readers" Version="1.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="NSwag.Core" Version="11.17.16" />
+    <PackageReference Include="NSwag.Core.Yaml" Version="11.17.16" />
   </ItemGroup>
 
   <ItemGroup>

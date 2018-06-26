@@ -4,9 +4,11 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading.Tasks;
 using System.Xml;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
+using NSwag;
 
 namespace SmartPlugin.ApiClient.CodeGen
 {
@@ -26,6 +28,10 @@ namespace SmartPlugin.ApiClient.CodeGen
 
         public void Generate()
         {
+            SwaggerDocument doc =  Task.Run(()=> !string.IsNullOrEmpty(_settings.ApiSpecPath)
+                ? SwaggerDocument.FromFileAsync(_settings.ApiSpecPath)
+                : SwaggerDocument.FromUrlAsync(_settings.ApiSpecUri)).GetAwaiter().GetResult();
+
 
             using (Stream specStream = (!string.IsNullOrEmpty(_settings.ApiSpecPath) ?
                                             (new FileStream(_settings.ApiSpecPath, FileMode.Open, FileAccess.Read)) :
@@ -55,7 +61,7 @@ namespace SmartPlugin.ApiClient.CodeGen
                     Client client=clients?.Keys?.FirstOrDefault(c => c.Name == clientName);
                       client = clients?.Keys?.FirstOrDefault(c => c.Name == clientName) ?? new Client(_apiSpecDoc.Tags.FirstOrDefault(c => c.Name == clientName))
                       {
-                          //RouteTemplate = 
+                          //RouteTemplate =
                       };
 
                 });
