@@ -4,9 +4,18 @@ using System.Text;
 using CommandLine;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
+using NSwag.CodeGeneration.OperationNameGenerators;
 
 namespace SmartPlugin.ApiClient.CodeGen
 {
+    public enum FileGenerationMode
+    {
+        SingleClientFromPathSegments=0,
+        SingleClientFromOperationId = 1,
+        MultipleClientsFromPathSegment = 2,
+        MultipleClientsFromOperationId = 3,
+    }
+
     internal class Settings
     {
         /// <summary>

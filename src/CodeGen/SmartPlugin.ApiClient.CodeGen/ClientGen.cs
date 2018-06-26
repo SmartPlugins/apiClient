@@ -9,6 +9,7 @@ using System.Xml;
 using Microsoft.OpenApi.Models;
 using Microsoft.OpenApi.Readers;
 using NSwag;
+using NSwag.CodeGeneration.CSharp;
 
 namespace SmartPlugin.ApiClient.CodeGen
 {
@@ -31,6 +32,8 @@ namespace SmartPlugin.ApiClient.CodeGen
             SwaggerDocument doc =  Task.Run(()=> !string.IsNullOrEmpty(_settings.ApiSpecPath)
                 ? SwaggerDocument.FromFileAsync(_settings.ApiSpecPath)
                 : SwaggerDocument.FromUrlAsync(_settings.ApiSpecUri)).GetAwaiter().GetResult();
+
+
 
 
             using (Stream specStream = (!string.IsNullOrEmpty(_settings.ApiSpecPath) ?
