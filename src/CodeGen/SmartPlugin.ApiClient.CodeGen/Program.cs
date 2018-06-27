@@ -1,5 +1,7 @@
 ﻿using CommandLine;
 using System;
+using System.Collections.Generic;
+using NSwag;
 
 namespace SmartPlugin.ApiClient.CodeGen
 {
@@ -28,11 +30,37 @@ namespace SmartPlugin.ApiClient.CodeGen
             {
                 settings.DynamicInvoke = false;
 
-                new ClientGen(settings).Generate();
+                new ClientGen(settings).GenerateFiles();
 
                 //coreGen.Generate();
             }
             Console.ReadLine();
         }
     }
+
+
+    //public class Test
+    //{
+
+    //    //MultipleClientsFromPathSegmentsOperationNameGenerator.cs
+    //    //MultipleClientsFromOperationIdOperationNameGenerator.cs
+
+    //    private List<TOperationModel> GetOperations(SwaggerDocument document)
+    //    {
+    //        document.GenerateOperationIds();
+
+    //        return document.Paths
+    //            .SelectMany(pair => pair.Value.Select(p => new { Path = pair.Key.TrimStart('/'), HttpMethod = p.Key, Operation = p.Value }))
+    //            .Select(tuple =>
+    //            {
+    //                var operationModel = CreateOperationModel(tuple.Operation, BaseSettings);
+    //                operationModel.ControllerName = BaseSettings.OperationNameGenerator.GetClientName(document, tuple.Path, tuple.HttpMethod, tuple.Operation);
+    //                operationModel.Path = tuple.Path;
+    //                operationModel.HttpMethod = tuple.HttpMethod;
+    //                operationModel.OperationName = BaseSettings.OperationNameGenerator.GetOperationName(document, tuple.Path, tuple.HttpMethod, tuple.Operation);
+    //                return operationModel;
+    //            })
+    //            .ToList();
+    //    }
+    //}
 }

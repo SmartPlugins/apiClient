@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
+using System.Reflection;
 using System.Threading.Tasks;
-using System.Xml;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Readers;
+using NJsonSchema;
+using NJsonSchema.CodeGeneration.CSharp;
 using NSwag;
+using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
+using NSwag.CodeGeneration.Models;
+using NSwag.CodeGeneration.OperationNameGenerators;
 
 namespace SmartPlugin.ApiClient.CodeGen
 {
@@ -19,88 +21,93 @@ namespace SmartPlugin.ApiClient.CodeGen
      */
     public sealed class ClientGen
     {
-        private Settings _settings;
-        private OpenApiDocument _apiSpecDoc;
+        /// <summary>
+        /// Gets the document.
+        /// </summary>
+        /// <value>
+        /// The document.
+        /// </value>
+        public SwaggerDocument Document { get; private set; }
 
+        private readonly Settings _settings;
+        private ILanguageCodeGen _langCodeGen;
+
+        private ClientGeneratorBaseSettings _langCodeGenSettings;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ClientGen"/> class.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
         internal ClientGen(Settings settings)
         {
             _settings = settings;
+            FetchSwaggerDocument();
+            DefineGeneratorSettings();
+            DefineCodeGenerator();
         }
 
-        public void Generate()
+        /// <summary>
+        /// Defines the generator settings.
+        /// </summary>
+        private void DefineGeneratorSettings()
         {
-            SwaggerDocument doc =  Task.Run(()=> !string.IsNullOrEmpty(_settings.ApiSpecPath)
-                ? SwaggerDocument.FromFileAsync(_settings.ApiSpecPath)
-                : SwaggerDocument.FromUrlAsync(_settings.ApiSpecUri)).GetAwaiter().GetResult();
-
-
-
-
-            using (Stream specStream = (!string.IsNullOrEmpty(_settings.ApiSpecPath) ?
-                                            (new FileStream(_settings.ApiSpecPath, FileMode.Open, FileAccess.Read)) :
-                                            (WebRequest.Create(_settings.ApiSpecUri).GetResponse().GetResponseStream())))
+            if (_settings.Language == Language.CSharp)
             {
-                _apiSpecDoc = new OpenApiStreamReader().Read(specStream, out var diagnostics);
-
-                if (diagnostics != null && (diagnostics.Errors?.Count ?? 0) > 0)
+                _langCodeGenSettings = new SwaggerToCSharpClientGeneratorSettings()
                 {
-                    Console.WriteLine("Following are the error(s) reading ApiSecp:");
-                    diagnostics.Errors.ToList().ForEach(e => Console.WriteLine(e));
-                    return;
-                }
-                Console.WriteLine("*****************************************************************************************************");
-                Console.WriteLine("Generating client files");
-                Console.WriteLine("*****************************************************************************************************");
-                Console.WriteLine($"Parsing Api operations for : '{_apiSpecDoc.Info.Title} (version:{_apiSpecDoc.Info.Version})'");
-                Console.WriteLine($"- {_apiSpecDoc.Info.Description}");
-                Console.WriteLine("*****************************************************************************************************");
+                    CSharpGeneratorSettings =
+                    {
+                        Namespace = _settings.ClientNamespace,
+                        TemplateFactory = new DefaultTemplateFactory(new CSharpGeneratorSettings (){
+                                                                    Namespace = _settings.ClientNamespace,
+                                                                    SchemaType = SchemaType.Swagger2},  new[]
+                        {
+                            typeof(CSharpGeneratorSettings).GetTypeInfo().Assembly,
+                            typeof(SwaggerToCSharpGeneratorSettings).GetTypeInfo().Assembly,
+                        } )
+                        //TemplateDirectory =
+                    },
+                    AdditionalNamespaceUsages =_settings.GetNamespaces(),
+                    GenerateSyncMethods = _settings.GenerateSyncMethods,
+                    ClientClassAccessModifier = "public",
+                    ClientBaseClass = "ApiBaseClient"
+                };
+            }
+            _langCodeGenSettings.OperationNameGenerator=new MultipleClientsFromPathSegmentsOperationNameGenerator();
+            _langCodeGenSettings.ClassName = "{controller}Client";
+        }
 
-                // var clients= _apiSpecDoc.Paths.Keys.Select(p => p.Substring(1,p.IndexOf('/',1) )).Distinct();
-                Dictionary<Client, List<Operation>> clients= new Dictionary<Client, List<Operation>> ();
+        private void DefineCodeGenerator()
+        {
+            if(_langCodeGenSettings==default)
+                DefineGeneratorSettings();
 
-                _apiSpecDoc.Paths.ToList().ForEach(p =>
-                {
-                    var clientName = p.Key.Substring(1, (p.Key.IndexOf('/', 1)==-1?p.Key.Length: p.Key.IndexOf('/', 1))-1);
-                    Client client=clients?.Keys?.FirstOrDefault(c => c.Name == clientName);
-                      client = clients?.Keys?.FirstOrDefault(c => c.Name == clientName) ?? new Client(_apiSpecDoc.Tags.FirstOrDefault(c => c.Name == clientName))
-                      {
-                          //RouteTemplate =
-                      };
-
-                });
-
-                _apiSpecDoc.Tags.ToList().ForEach(t =>
-                {
-                    Console.WriteLine($"Generating operations for the client '{t.Name}': {t.Description}");
-
-                });
+            if (_settings.Language == Language.CSharp)
+            {
+               _langCodeGen = new CSharpCodeGen(Document,(SwaggerToCSharpClientGeneratorSettings) _langCodeGenSettings);
             }
         }
-    }
 
-    public class Client:OpenApiTag
-    {
-        public Client()
+        /// <summary>
+        /// Fetch Swagger document from swagger file path or Uri.
+        /// </summary>
+        /// <remarks>
+        /// FilePath takes precidence over Uri
+        /// </remarks>
+        private void FetchSwaggerDocument()
         {
+            Document = Task.Run(() => !string.IsNullOrEmpty(_settings.ApiSpecPath)
+                ? SwaggerDocument.FromFileAsync(_settings.ApiSpecPath)
+                : SwaggerDocument.FromUrlAsync(_settings.ApiSpecUri)).GetAwaiter().GetResult();
         }
 
-        public Client(OpenApiTag tag)
+        /// <summary>
+        /// Generates the files.
+        /// </summary>
+        public void GenerateFiles()
         {
-            Name = tag.Name;
-            Description = tag.Description;
-            Extensions = tag.Extensions;
-            ExternalDocs = tag.ExternalDocs;
-            Reference = tag.Reference;
-            UnresolvedReference = tag.UnresolvedReference;
+
+            //TODO: Write files
         }
-
-        public string RouteTemplate { get; set; }
-        public string Comments { get; set; }
-    }
-
-    public class Operation : OpenApiOperation
-    {
-        public string ActionTemplate { get; set; }
-        public string Comments { get; set; }
     }
 }

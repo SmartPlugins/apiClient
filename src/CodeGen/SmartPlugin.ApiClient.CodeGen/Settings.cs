@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using CommandLine;
-using Microsoft.OpenApi.Models;
-using Microsoft.OpenApi.Readers;
 using NSwag.CodeGeneration.OperationNameGenerators;
 
 namespace SmartPlugin.ApiClient.CodeGen
@@ -60,5 +59,41 @@ namespace SmartPlugin.ApiClient.CodeGen
         /// </summary>
         [Option('o', nameof(OutputPath), HelpText = "Path for the generated code")]
         internal string OutputPath { get; set; } = System.IO.Path.Combine(Environment.CurrentDirectory, "GeneratedCode");
+
+        /// <summary>
+        /// Gets or sets the language.
+        /// </summary>
+        /// <value>
+        /// The language.
+        /// </value>
+        [Option('l', nameof(Language), HelpText = "Code generation language")]
+        internal Language Language { get; set; } = Language.CSharp;
+
+        /// <summary>
+        /// Gets or sets the additional namespaces.
+        /// </summary>
+        /// <value>
+        /// The additional namespaces.
+        /// </value>
+        [Option('a', nameof(AdditionalNamespaces), HelpText = "Semicolon delimited string consisting namespaces to be added to the files")]
+        internal string AdditionalNamespaces { get; set; }
+
+        /// <summary>
+        /// Gets or sets the generate synchronize methods.
+        /// </summary>
+        /// <value>
+        /// The generate synchronize methods.
+        /// </value>
+        [Option('s', nameof(GenerateSyncMethods), HelpText ="Specify synchronous method generation. Default is 'true'.")]
+        internal bool GenerateSyncMethods { get; set; } = true;
+
+        internal string[] GetNamespaces()=>
+            AdditionalNamespaces?.Split(';')?.ToArray();
+    }
+
+    public enum Language
+    {
+        CSharp=0,
+        //TypeScript=1
     }
 }
