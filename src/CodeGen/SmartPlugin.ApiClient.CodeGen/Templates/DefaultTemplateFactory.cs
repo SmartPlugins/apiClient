@@ -11,12 +11,15 @@ namespace SmartPlugin.ApiClient.CodeGen.Templates
     /// <summary>The default template factory which loads templates from embedded resources.</summary>
     public class DefaultTemplateFactory : NJsonSchema.CodeGeneration.DefaultTemplateFactory
     {
+        private string templateAssemblyName;
+
         /// <summary>Initializes a new instance of the <see cref="DefaultTemplateFactory" /> class.</summary>
         /// <param name="settings">The settings.</param>
         /// <param name="assemblies">The assemblies.</param>
-        public DefaultTemplateFactory(CodeGeneratorSettingsBase settings, Assembly[] assemblies)
+        public DefaultTemplateFactory(CodeGeneratorSettingsBase settings, string templateAssemblyName, Assembly[] assemblies)
             : base(settings, assemblies)
         {
+             this.templateAssemblyName = templateAssemblyName;
         }
 
         /// <summary>Gets the current toolchain version.</summary>
@@ -32,8 +35,8 @@ namespace SmartPlugin.ApiClient.CodeGen.Templates
         /// <returns>The template.</returns>
         protected override string GetEmbeddedLiquidTemplate(string language, string template)
         {
-            var assembly = GetLiquidAssembly("NSwag.CodeGeneration." + language);
-            var resourceName = "NSwag.CodeGeneration." + language + ".Templates." + template + ".liquid";
+            var assembly = GetLiquidAssembly(this.templateAssemblyName);
+            var resourceName = $"{templateAssemblyName}.Templates.{language}.{template}.liquid";
 
             var resource = assembly.GetManifestResourceStream(resourceName);
             if (resource != null)

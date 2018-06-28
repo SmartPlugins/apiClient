@@ -1,0 +1,140 @@
+﻿[System.CodeDom.Compiler.GeneratedCode("SmartPluings", "{{ ToolchainVersion }}")]
+{{ ClientClassAccessModifier }} partial class {{ Class }} {% if HasBaseType %}: {% endif %}{% if HasBaseClass %}{{ BaseClass }}{% if GenerateClientInterfaces %}, {% endif %}{% endif %}{% if GenerateClientInterfaces %}I{{ Class }}{% endif %}
+{
+
+	public {{ Class }}():base(){}
+
+	public {{ Class }}(string route) : base(route){}
+
+    public {{ Class }}(string baseUrl, string route):base(baseUrl, route) { }
+
+
+{% for operation in Operations -%}
+{%     if GenerateOptionalParameters == false -%}
+    {% template Client.Method.Documentation %}
+	[RestAction(HttpVerb.{{ operation.HttpMethodUpper | upcase }}, @"{{ operation.Path }}" )]
+    {{ operation.MethodAccessModifier }} {{ operation.ResultType }} {{ operation.ActualOperationName }}Async({% for parameter in operation.Parameters %}{{ parameter.Type }} {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %} = null{% endif %}{% if parameter.IsLast == false %}, {% endif %}{% endfor %})
+    {
+        return {{ operation.ActualOperationName }}Async({% for parameter in operation.Parameters %}{{ parameter.VariableName }}, {% endfor %}System.Threading.CancellationToken.None);
+    }
+
+{%     endif -%}
+{%     if GenerateSyncMethods -%}
+    {% template Client.Method.Documentation %}
+	[RestAction(HttpVerb.{{ operation.HttpMethodUpper | upcase }}, @"{{ operation.Path }}" )]
+    {{ operation.MethodAccessModifier }} {{ operation.SyncResultType }} {{ operation.ActualOperationName }}({% for parameter in operation.Parameters %}{{ parameter.Type }} {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %} = null{% endif %}{% if parameter.IsLast == false %}, {% endif %}{% endfor %})
+    {
+        {% if operation.HasResult %}return {% endif %}System.Threading.Tasks.Task.Run(async () => await {{ operation.ActualOperationName }}Async({% for parameter in operation.Parameters %}{{ parameter.VariableName }}, {% endfor %}System.Threading.CancellationToken.None)).GetAwaiter().GetResult();
+    }
+
+{%     endif -%}
+    {% template Client.Method.Documentation %}
+    /// <param name="cancellationToken">A cancellation token that can be used by other objects or threads to receive notice of cancellation.</param>
+	[RestAction(HttpVerb.{{ operation.HttpMethodUpper | upcase }}, @"{{ operation.Path }}" )]
+    {{ operation.MethodAccessModifier }} async {{ operation.ResultType }} {{ operation.ActualOperationName }}Async({% for parameter in operation.Parameters %}{{ parameter.Type }} {{ parameter.VariableName }}{% if GenerateOptionalParameters and parameter.IsOptional %} = null{% endif %}, {% endfor %}System.Threading.CancellationToken cancellationToken{% if GenerateOptionalParameters %} = default(System.Threading.CancellationToken){% endif %})
+    {
+		#region "Parameter validations"
+			//Validating 'Path' binding parameter
+{%     for parameter in operation.PathParameters -%}
+{%		if parameter.IsNullable == false and parameter.IsRequired -%}
+			if ({{ parameter.VariableName }} == null)
+				throw new System.ArgumentNullException($"Parameter '{nameof({{ parameter.VariableName }})}' is required and no value has been specified.");
+{%         endif -%}
+{%     endfor -%}
+			//Validating 'Query' binding parameter
+{%     for parameter in operation.QueryParameters -%}
+{%        if parameter.IsNullable == false and parameter.IsRequired -%}
+			if ({{ parameter.VariableName }} == null)
+				throw new System.ArgumentNullException($"Parameter '{nameof({{ parameter.VariableName }})}' is required and no value has been specified.");
+{%         endif -%}
+{%     endfor -%}
+			//Validating 'Header' binding parameter
+{%     for parameter in operation.HeaderParameters -%}
+{%        if parameter.IsRequired -%}
+			if (({{ parameter.VariableName }} == null && !ApiHeaders.ContainsKey({{ parameter.VariableName }})) || ApiHeaders[{{ parameter.VariableName }}] == null)
+				throw new System.ArgumentNullException($"Parameter '{nameof({{ parameter.VariableName }})}' is required and no value has been specified.");
+{%         endif -%}
+{%     endfor -%}
+		#endregion "Parameter validations"
+
+		#region "Parameter catalog"
+			//Building parameter dictionary for dynamic invoke
+			var parameters = new Parameters();
+
+			#region "Adding 'Path' binding parameters"
+			//Adding 'Path' binding parameters to the dictionary
+{%     for parameter in operation.PathParameters -%}
+				parameters.Add(nameof({{ parameter.VariableName }}), typeof({{ parameter.Type }}), BindingSource.Path);
+{%     endfor -%}
+			#endregion "Adding 'Path' binding parameters"
+
+			#region "Adding 'Query' binding parameters"
+			//Adding 'Query' binding parameters to the dictionary
+{%     for parameter in operation.QueryParameters -%}
+				parameters.Add(nameof({{ parameter.VariableName }}), typeof({{ parameter.Type }}), BindingSource.Query);
+{%     endfor -%}
+			#endregion "Adding 'Query' binding parameters"
+
+			#region "Adding 'Header' binding parameters"
+				//Adding 'Header' binding parameters to the dictionary
+{%     for parameter in operation.HeaderParameters -%}
+				parameters.Add(nameof({{ parameter.VariableName }}), typeof({{ parameter.Type }}), BindingSource.Header);
+{%     endfor -%}
+			#endregion "Adding 'Header' binding parameters"
+
+{%     if operation.HasContent -%}
+			#region "Defining 'Request Content' from the body parameters"
+				//Defining Request Content from the body parameters
+{%         if operation.HasBinaryBodyParameter -%}
+				var reqContent = new System.Net.Http.StreamContent({{ operation.ContentParameter.VariableName }});
+{%         elseif operation.HasXmlBodyParameter -%}
+				var reqContent = new System.Net.Http.StringContent({{ operation.ContentParameter.VariableName }});
+{%         else -%}
+				var reqContent = new System.Net.Http.StringContent(Newtonsoft.Json.JsonConvert.SerializeObject({{ operation.ContentParameter.VariableName }}, JsonSerializerSettings));
+{%         endif -%}
+				reqContent.Headers.ContentType = System.Net.Http.Headers.MediaTypeHeaderValue.Parse("{{ operation.Consumes }}");
+				parameters.RequestContent=reqContent;
+			#endregion "Defining 'Request Content' from the body parameters"
+{%     else -%}
+{%         if operation.HasFormParameters -%}
+			#region "Defining 'Request Content' from the form parameters"
+				//Defining Request Content from the form parameters
+                var boundary = System.Guid.NewGuid().ToString();
+                var reqContent = new System.Net.Http.MultipartFormDataContent(boundary);
+                reqContent.Headers.Remove("Content-Type");
+                content_.Headers.TryAddWithoutValidation("Content-Type", "multipart/form-data; boundary=" + boundary);
+{%             for parameter in operation.FormParameters -%}
+{%                 if parameter.IsNullable -%}
+                if ({{ parameter.VariableName }} != null)
+{%                 else -%}
+                if ({{ parameter.VariableName }} == null)
+                    throw new System.ArgumentNullException($"Parameter '{nameof({{ parameter.VariableName }})}' is required and no value has been specified.");
+                else
+{%                 endif -%}
+{%                 if parameter.IsFile -%}
+{%                     if parameter.IsArray -%}
+                    foreach (var item_ in {{ parameter.VariableName }}) { content_.Add(new System.Net.Http.StreamContent(item_.Data), "{{ parameter.Name }}", item_.FileName ?? "{{ parameter.Name }}"); }
+{%                     else -%}
+                    content_.Add(new System.Net.Http.StreamContent({{ parameter.VariableName }}.Data), "{{ parameter.Name }}", {{ parameter.VariableName }}.FileName ?? "{{ parameter.Name }}");
+{%                     endif -%}
+{%                 else -%}
+                    content_.Add(new System.Net.Http.StringContent(ConvertToString({{ parameter.VariableName }}, System.Globalization.CultureInfo.InvariantCulture)), "{{ parameter.Name }}");
+{%                 endif -%}
+{%             endfor -%}
+				parameters.RequestContent=reqContent;
+			#endregion "Defining 'Request Content' from the form parameters"
+{%         elseif operation.IsGetOrDeleteOrHead == false -%}
+                var reqContent = new System.Net.Http.StringContent(string.Empty, System.Text.Encoding.UTF8, "{{ operation.Produces }}");
+				parameters.RequestContent=reqContent;
+{%         endif -%}
+{%     endif -%}
+		#endregion "Parameter catalog"
+
+		//Invoking the API request executor
+		return ExecuteAsync<{{ operation.SyncResultType }}>(parameters, cancellationToken);
+	}
+ }
+
+{% endfor -%}
+    {% template Client.Class.ConvertToString %}
+}

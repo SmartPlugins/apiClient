@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using NJsonSchema;
 using NJsonSchema.CodeGeneration.CSharp;
 using NSwag;
 using NSwag.CodeGeneration;
 using NSwag.CodeGeneration.CSharp;
+using NSwag.CodeGeneration.CSharp.Models;
 using NSwag.CodeGeneration.Models;
 using NSwag.CodeGeneration.OperationNameGenerators;
 
@@ -51,16 +53,16 @@ namespace SmartPlugin.ApiClient.CodeGen
         /// </summary>
         private void DefineGeneratorSettings()
         {
-            if (_settings.Language == Language.CSharp)
+            if (_settings.LanguageCode == Language.CSharp)
             {
                 _langCodeGenSettings = new SwaggerToCSharpClientGeneratorSettings()
                 {
                     CSharpGeneratorSettings =
                     {
                         Namespace = _settings.ClientNamespace,
-                        TemplateFactory = new DefaultTemplateFactory(new CSharpGeneratorSettings (){
+                        TemplateFactory = new Templates.DefaultTemplateFactory(new CSharpGeneratorSettings (){
                                                                     Namespace = _settings.ClientNamespace,
-                                                                    SchemaType = SchemaType.Swagger2},  new[]
+                                                                    SchemaType = SchemaType.Swagger2}, _settings.TemplatesAssemblyName ,  new[]
                         {
                             typeof(CSharpGeneratorSettings).GetTypeInfo().Assembly,
                             typeof(SwaggerToCSharpGeneratorSettings).GetTypeInfo().Assembly,
@@ -70,7 +72,13 @@ namespace SmartPlugin.ApiClient.CodeGen
                     AdditionalNamespaceUsages =_settings.GetNamespaces(),
                     GenerateSyncMethods = _settings.GenerateSyncMethods,
                     ClientClassAccessModifier = "public",
-                    ClientBaseClass = "ApiBaseClient"
+                    ClientBaseClass = "ApiBaseClient",
+                    ParameterArrayType = "List",        //Default: System.Collections.Generic.IEnumerable
+                    ParameterDictionaryType = "Dictonary", //Default: System.Collections.Generic.IDictionary
+                    ResponseArrayType = "List", // Default: System.Collections.ObjectModel.ObservableCollection
+                    ResponseDictionaryType = "Dictonary", //Default: System.Collections.Generic.Dictionary
+                    GenerateDtoTypes = false,
+                    GenerateClientInterfaces = true,
                 };
             }
             _langCodeGenSettings.OperationNameGenerator=new MultipleClientsFromPathSegmentsOperationNameGenerator();
@@ -82,7 +90,7 @@ namespace SmartPlugin.ApiClient.CodeGen
             if(_langCodeGenSettings==default)
                 DefineGeneratorSettings();
 
-            if (_settings.Language == Language.CSharp)
+            if (_settings.LanguageCode == Language.CSharp)
             {
                _langCodeGen = new CSharpCodeGen(Document,(SwaggerToCSharpClientGeneratorSettings) _langCodeGenSettings);
             }
@@ -108,6 +116,10 @@ namespace SmartPlugin.ApiClient.CodeGen
         {
 
             //TODO: Write files
+
+
+
+
         }
     }
 }

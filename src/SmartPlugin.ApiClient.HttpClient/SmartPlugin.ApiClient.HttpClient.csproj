@@ -14,6 +14,22 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Templates\CSharp\Client.Class.liquid" />
+    <None Remove="Templates\CSharp\Client.Interface.Body.liquid" />
+    <None Remove="Templates\CSharp\Client.Interface.liquid" />
+    <None Remove="Templates\CSharp\Client.liquid" />
+    <None Remove="Templates\CSharp\Client.Method.Documentation.liquid" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Include="Templates\CSharp\Client.Class.liquid" />
+    <EmbeddedResource Include="Templates\CSharp\Client.Interface.Body.liquid" />
+    <EmbeddedResource Include="Templates\CSharp\Client.Interface.liquid" />
+    <EmbeddedResource Include="Templates\CSharp\Client.liquid" />
+    <EmbeddedResource Include="Templates\CSharp\Client.Method.Documentation.liquid" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\SmartPlugin.ApiClient\SmartPlugin.ApiClient.csproj" />
   </ItemGroup>
 

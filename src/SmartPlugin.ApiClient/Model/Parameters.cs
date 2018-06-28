@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using SmartPlugin.ApiClient.Enums;
 
 namespace SmartPlugin.ApiClient.Model
@@ -49,5 +50,7 @@ namespace SmartPlugin.ApiClient.Model
                     base[parameter.Binding].Add(parameter);
             }
         }
+
+        public HttpContent RequestContent { get; set; }
     }
 }

@@ -1,6 +1,7 @@
 ﻿using CommandLine;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NSwag;
 
 namespace SmartPlugin.ApiClient.CodeGen
@@ -12,7 +13,13 @@ namespace SmartPlugin.ApiClient.CodeGen
             //Console.WriteLine("Hello World!");
 
             Parser.Default.ParseArguments<Settings>(args)
-                .WithParsed<Settings>(opts => InvokeCodeGen(opts));
+                .WithParsed<Settings>(opts => InvokeCodeGen(opts))
+                .WithNotParsed<Settings>((errors)=> HandleArgumentErrors(errors.ToList()));
+        }
+
+        private static void HandleArgumentErrors(List<Error> errors)
+        {
+            
         }
 
         /// <summary>

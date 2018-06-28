@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Net.Http.Headers;
+using SmartPlugin.ApiClient.Attributes;
 using SmartPlugin.ApiClient.Extensions;
 
 namespace SmartPlugin.ApiClient
@@ -19,6 +20,12 @@ namespace SmartPlugin.ApiClient
     {
         private System.Lazy<Newtonsoft.Json.JsonSerializerSettings> _settings;
         protected Newtonsoft.Json.JsonSerializerSettings JsonSerializerSettings { get { return _settings.Value; } }
+
+        protected ApiBaseClient():base(){}
+
+        protected ApiBaseClient(string route) : base(route){}
+
+        protected ApiBaseClient(string baseUrl, string route):base(baseUrl, route) { }
 
 
         partial void UpdateJsonSerializerSettings(JsonSerializerSettings settings);
@@ -37,6 +44,13 @@ namespace SmartPlugin.ApiClient
             });
         }
 
+        /// <summary>
+        /// Executes the asynchronous.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         protected async override Task<T> ExecuteAsync<T>(Parameters parameters, CancellationToken cancellationToken = default(CancellationToken))
         {
             var opInfo = new StackTrace().GetOperationInfo();
@@ -46,6 +60,18 @@ namespace SmartPlugin.ApiClient
             return await ExecuteAsync<T>(action, actionTemplate, parameters, cancellationToken);
         }
 
+        /// <summary>
+        /// Executes the asynchronous.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="actionTemplate">The action template.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
+        /// <exception cref="ApiClientException">
+        /// null
+        /// </exception>
         protected async override Task<T> ExecuteAsync<T>(HttpVerb action, string actionTemplate, Parameters parameters,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -79,20 +105,23 @@ namespace SmartPlugin.ApiClient
                                     ConvertToString(h.Value, CultureInfo.InvariantCulture));
                             });
                         }
+                        ////Stuffing body parameters
+                        //if (parameters?.ContainsKey(BindingSource.Body) ?? false)
+                        //{
+                        //    if ((parameters[BindingSource.Body]?.Count ?? 0) > 1)
+                        //        throw new ApiClientException(
+                        //            $"Target of invocation exception in calling {methodName} due to an error: 'API call has multiple parameter bindings to the body element.'");
 
-                        //Stuffing body parameters
-                        if (parameters?.ContainsKey(BindingSource.Body) ?? false)
-                        {
-                            if ((parameters[BindingSource.Body]?.Count ?? 0) > 1)
-                                throw new ApiClientException(
-                                    $"Target of invocation exception in calling {methodName} due to an error: 'API call has multiple parameter bindings to the body element.'");
+                        //    var p = parameters[BindingSource.Body]?.ToList().FirstOrDefault();
+                        //    var content =
+                        //        new StringContent(JsonConvert.SerializeObject(p.Value, _settings.Value));
+                        //    content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
+                        //    request.Content = content;
+                        //}
 
-                            var p = parameters[BindingSource.Body]?.ToList().FirstOrDefault();
-                            var content =
-                                new StringContent(JsonConvert.SerializeObject(p.Value, _settings.Value));
-                            content.Headers.ContentType = MediaTypeHeaderValue.Parse("application/json");
-                            request.Content = content;
-                        }
+                        //Binding RequestConent which could be a form / body element
+                        if (parameters.RequestContent != null)
+                            request.Content = parameters.RequestContent;
 
                         //Setting Http action verb
                         request.Method = new HttpMethod(Enum.GetName(typeof(HttpVerb), action));
@@ -132,7 +161,7 @@ namespace SmartPlugin.ApiClient
                                 catch (Exception ex)
                                 {
                                     throw new ApiClientException(
-                                        $"Target of invocation exception in calling {methodName} due to an error: {"Could not deserialize the response body."}",
+                                        $"Target of invocation exception in calling {methodName} due to an error: \"Could not deserialize the response body.\"",
                                         (int) response.StatusCode, responseData, headers, ex);
                                 }
                             }
@@ -143,7 +172,7 @@ namespace SmartPlugin.ApiClient
                                     ? null
                                     : await response.Content.ReadAsStringAsync().ConfigureAwait(false);
                                 throw new ApiClientException(
-                                    $"Target of invocation exception in calling {methodName} due to an error: {"The HTTP status code of the response was not expected ("}{Enum.GetName(typeof(HttpStatusCode), response.StatusCode)}:{(int) response.StatusCode}).",
+                                    $"Target of invocation exception in calling {methodName} due to an error: \"The HTTP status code of the response was not expected (\"{Enum.GetName(typeof(HttpStatusCode), response.StatusCode)}:{(int) response.StatusCode}).",
                                     (int) response.StatusCode, responseData, headers, null);
                             }
 

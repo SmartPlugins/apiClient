@@ -13,7 +13,7 @@ namespace SmartPlugin.ApiClient
     public abstract class AbstractApiBaseClient
     {
         public string BaseUrl { get; private set; }
-        protected Dictionary<string, string> ApiHeaders = new Dictionary<string, string>();
+        protected Dictionary<string, string> ApiHeaders { get; private set; }= new Dictionary<string, string>();
         protected string BaseRoute { get; private set; }
         protected ApiClient Config { get; set; }
 
@@ -59,12 +59,44 @@ namespace SmartPlugin.ApiClient
         }
         #endregion
 
+        /// <summary>
+        /// Adds the additional headers.
+        /// </summary>
+        /// <param name="headerName">Name of the header.</param>
+        /// <param name="headerValue">The header value.</param>
+        protected void AddARequestHeader(string headerName, string headerValue)
+        {
+            if (ApiHeaders.ContainsKey(headerName))
+                ApiHeaders[headerName] = headerValue;
+            else
+                ApiHeaders.Add(headerName, headerValue);
+        }
+
+        /// <summary>
+        /// Adds the additional headers.
+        /// </summary>
+        /// <param name="headers">The dictionary of key:string and value:string.</param>
+        protected void AddARequestHeaders(Dictionary<string, string> headers)=>
+            headers?.ToList().ForEach(h=> AddARequestHeader(h.Key, h.Value));
+
+
+        /// <summary>
+        /// Gets the request URL.
+        /// </summary>
+        /// <param name="actionTemplate">The action template.</param>
+        /// <returns></returns>
         protected StringBuilder GetRequestUrl(string actionTemplate) =>
             new StringBuilder().Append(BaseUrl?.TrimEnd('/') ?? string.Empty)
                 .Append($"/{BaseRoute?.TrimStart('/').TrimEnd('/')}")
                 .Append($"/{actionTemplate?.TrimStart('/')}");
         // $"{BaseUrl?.TrimEnd('/')??string.Empty}/{BaseRoute?.TrimStart('/').TrimEnd('/')}/{actionTemplate?.TrimStart('/')}"
 
+        /// <summary>
+        /// Gets the request URL.
+        /// </summary>
+        /// <param name="actionTemplate">The action template.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <returns></returns>
         protected StringBuilder GetRequestUrl(string actionTemplate, Parameters parameters)
         {
             var url = GetRequestUrl(actionTemplate);
@@ -81,9 +113,20 @@ namespace SmartPlugin.ApiClient
             return url;
         }
 
+        /// <summary>
+        /// Escapes the data.
+        /// </summary>
+        /// <param name="data">The data.</param>
+        /// <returns></returns>
         protected string EscapeData(string data)
             => System.Uri.EscapeDataString(ConvertToString(data, System.Globalization.CultureInfo.InvariantCulture));
 
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <param name="cultureInfo">The culture information.</param>
+        /// <returns></returns>
         protected string ConvertToString(object value, System.Globalization.CultureInfo cultureInfo)
         {
             if (value is System.Enum)
@@ -116,9 +159,25 @@ namespace SmartPlugin.ApiClient
             return System.Convert.ToString(value, cultureInfo);
         }
 
+        /// <summary>
+        /// Executes the asynchronous.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         protected abstract Task<T> ExecuteAsync<T>(Parameters parameters,
             CancellationToken cancellationToken = default(CancellationToken));
 
+        /// <summary>
+        /// Executes the asynchronous.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="action">The action.</param>
+        /// <param name="actionTemplate">The action template.</param>
+        /// <param name="parameters">The parameters.</param>
+        /// <param name="cancellationToken">The cancellation token.</param>
+        /// <returns></returns>
         protected abstract Task<T> ExecuteAsync<T>(HttpVerb action, string actionTemplate, Parameters parameters,
             CancellationToken cancellationToken = default(CancellationToken));
     }
