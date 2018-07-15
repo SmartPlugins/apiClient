@@ -24,6 +24,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\SmartPlugin.ApiClient.HttpClient\SmartPlugin.ApiClient.HttpClient.csproj" />
     <ProjectReference Include="..\..\SmartPlugin.ApiClient\SmartPlugin.ApiClient.csproj" />
   </ItemGroup>
 

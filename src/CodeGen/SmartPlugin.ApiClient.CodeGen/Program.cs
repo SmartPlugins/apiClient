@@ -29,6 +29,7 @@ namespace SmartPlugin.ApiClient.CodeGen
         private static void InvokeCodeGen(Settings settings)
         {
             settings.ApiSpecPath = @"C:\Temp\EACH.json";
+            settings.TemplatesAssemblyName = "SmartPlugin.ApiClient.HttpClient";
            // settings.ApiSpecUri = @"https://petstore.swagger.io/v2/swagger.json";
 
             if (string.IsNullOrEmpty(settings.ApiSpecPath) && string.IsNullOrEmpty(settings.ApiSpecUri))

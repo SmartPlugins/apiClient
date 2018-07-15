@@ -7,6 +7,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using NJsonSchema;
+using NJsonSchema.CodeGeneration;
 using NJsonSchema.CodeGeneration.CSharp;
 using NSwag;
 using NSwag.CodeGeneration;
@@ -56,20 +57,14 @@ namespace SmartPlugin.ApiClient.CodeGen
             if (_settings.LanguageCode == Language.CSharp)
             {
                 _langCodeGenSettings = new SwaggerToCSharpClientGeneratorSettings()
-                {
+                { 
                     CSharpGeneratorSettings =
                     {
                         Namespace = _settings.ClientNamespace,
-                        TemplateFactory = new Templates.DefaultTemplateFactory(new CSharpGeneratorSettings (){
-                                                                    Namespace = _settings.ClientNamespace,
-                                                                    SchemaType = SchemaType.Swagger2}, _settings.TemplatesAssemblyName ,  new[]
-                        {
-                            typeof(CSharpGeneratorSettings).GetTypeInfo().Assembly,
-                            typeof(SwaggerToCSharpGeneratorSettings).GetTypeInfo().Assembly,
-                        } )
+                         SchemaType = SchemaType.Swagger2
                         //TemplateDirectory =
                     },
-                    AdditionalNamespaceUsages =_settings.GetNamespaces(),
+                    AdditionalNamespaceUsages = _settings.GetNamespaces(),
                     GenerateSyncMethods = _settings.GenerateSyncMethods,
                     ClientClassAccessModifier = "public",
                     ClientBaseClass = "ApiBaseClient",
@@ -80,6 +75,31 @@ namespace SmartPlugin.ApiClient.CodeGen
                     GenerateDtoTypes = false,
                     GenerateClientInterfaces = true,
                 };
+
+                List<Assembly> templateAssemblies=new List<Assembly>();
+
+                Assembly assembly = null;
+
+                if (!string.IsNullOrEmpty(_settings.TemplatesDirectory))
+                    _langCodeGenSettings.CodeGeneratorSettings.TemplateDirectory = _settings.TemplatesDirectory;
+                else if (!string.IsNullOrEmpty(_settings.TemplatesAssemblyName))
+                {
+                    templateAssemblies.Add(typeof(CSharpGeneratorSettings).GetTypeInfo().Assembly);
+                    templateAssemblies.Add(typeof(SwaggerToCSharpGeneratorSettings).GetTypeInfo().Assembly);
+
+                    try { assembly = typeof(ApiBaseClient).Assembly; // Assembly.Load(_settings.TemplatesAssemblyName);
+                        templateAssemblies.Add(assembly);
+                    }
+                    catch (Exception e)
+                    { }
+                }
+
+                var templateFactory = new Templates.TemplateFactory(_langCodeGenSettings.CodeGeneratorSettings,
+                                                                                        _settings.TemplatesAssemblyName,
+                                                                                        templateAssemblies);
+
+                _langCodeGenSettings.CodeGeneratorSettings.TemplateFactory = templateFactory;
+
             }
             _langCodeGenSettings.OperationNameGenerator=new MultipleClientsFromPathSegmentsOperationNameGenerator();
             _langCodeGenSettings.ClassName = "{controller}Client";
@@ -118,20 +138,22 @@ namespace SmartPlugin.ApiClient.CodeGen
             {
                 if (!Directory.Exists(_settings.OutputPath))
                     Directory.CreateDirectory(_settings.OutputPath);
-
+                
                 _langCodeGen.GetClientCode()
                             .ToList()
                             .ForEach(c => {                                
-                                var fileName = Path.Combine(_settings.OutputPath, $"{c.ClientName}.{_langCodeGen.FileExtension}");
+                                var fileName = c.ClientName + _langCodeGen.FileExtension;
 
-                                Console.WriteLine($"Writing file '{c.ClientName}.{_langCodeGen.FileExtension}' to '{_settings.OutputPath}'");
+                                Console.WriteLine($"Writing file '{fileName}' to '{_settings.OutputPath}'");
 
-                                using (TextWriter tw = new StreamWriter(fileName))
+                                using (TextWriter tw = new StreamWriter(Path.Combine(_settings.OutputPath, fileName)))
                                 {
                                     tw.WriteLine(c.Code);
                                     tw.Flush();
                                 }
                             });
+                Console.WriteLine($"Code generation completed. Files can be located at \n'{_settings.OutputPath}'");
+                System.Diagnostics.Process.Start(Environment.GetEnvironmentVariable("WINDIR") + @"\explorer.exe", _settings.OutputPath);
             }
             catch (Exception ex)
             {

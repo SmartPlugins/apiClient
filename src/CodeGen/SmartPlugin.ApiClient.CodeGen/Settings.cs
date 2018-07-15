@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using CommandLine;
+using NJsonSchema;
 using NSwag.CodeGeneration.OperationNameGenerators;
 
 namespace SmartPlugin.ApiClient.CodeGen
@@ -118,8 +119,14 @@ namespace SmartPlugin.ApiClient.CodeGen
         /// <value>
         /// The generate synchronize methods.
         /// </value>
-        [Option('t', nameof(TemplatesAssemblyName), HelpText = "Specify the name of the assembly containing the templates for the generation.", Required = true)]
+        [Option( nameof(TemplatesAssemblyName), HelpText = "Specify the name of the assembly containing the templates for the generation.", Required = true)]
         internal string TemplatesAssemblyName { get; set; }
+
+        [Option('t', nameof(TemplatesDirectory), HelpText = "Specify the directory path for the '.liquid' template files.", Required = true)]
+        internal string TemplatesDirectory { get; set; }
+
+        [Option(Default = SchemaType.Swagger2,HelpText ="Specify the code generation type.", SetName = nameof(SchemaType)) ]
+        internal SchemaType SchemaType { get; set; } = SchemaType.Swagger2;
 
         internal string[] GetNamespaces()
         {
@@ -136,6 +143,9 @@ namespace SmartPlugin.ApiClient.CodeGen
 
             if (string.IsNullOrEmpty(ApiSpecPath) && string.IsNullOrEmpty(ApiSpecUri))
                 validations.Add("Neither of Api specification file/Uri has been specified for the client generation.");
+
+            if (string.IsNullOrEmpty(TemplatesAssemblyName) && string.IsNullOrEmpty(TemplatesDirectory))
+                validations.Add("Neither of template source properties has been specified for the client generation.");
 
             return (validations.Count == 0, validations);
         }

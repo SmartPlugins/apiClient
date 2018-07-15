@@ -128,13 +128,13 @@
 				parameters.RequestContent=reqContent;
 {%         endif -%}
 {%     endif -%}
-		#endregion "Parameter catalog"
+	   #endregion "Parameter catalog"
 
-		//Invoking the API request executor
-		return ExecuteAsync<{{ operation.SyncResultType }}>(parameters, cancellationToken);
-	}
- }
+	   //Invoking the API request executor
+	   return ExecuteAsync<{{ operation.SyncResultType }}>(parameters, cancellationToken);
+	  }
+    }
 
 {% endfor -%}
-    {% template Client.Class.ConvertToString %}
+
 }
