@@ -10,11 +10,13 @@ namespace SmartPlugin.ApiClient.CodeGen
     public interface ILanguageCodeGen
     {
         NSwag.SwaggerDocument Document { get; }
+
+        string FileExtension { get; }
         List<NSwag.CodeGeneration.Models.IOperationModel> Operations{ get; }
         List<BaseClientInfo> Clients { get; }
         void IdentifyClients();
-        Dictionary<string, string> GetClientCode();
-        Dictionary<string, string> GetClientCode(ClientGeneratorOutputType outputType);
+        List<(string ClientName, string Code)> GetClientCode();
+        List<(string ClientName, string Code)> GetClientCode(ClientGeneratorOutputType outputType);
        string GenerateClientClass(BaseClientInfo csci, ClientGeneratorOutputType outputType);
 
         string GenerateClientCode(string controllerName, string controllerClassName, IList<IOperationModel> operations,
@@ -23,5 +25,13 @@ namespace SmartPlugin.ApiClient.CodeGen
         List<IOperationModel> GetOperations();
 
         string GetConfiguration();
+
+        Language Language { get; }
+    }
+
+    public enum Language
+    {
+        CSharp = 0,
+        //TypeScript=1
     }
 }

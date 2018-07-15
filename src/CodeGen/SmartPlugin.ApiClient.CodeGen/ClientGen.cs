@@ -114,12 +114,29 @@ namespace SmartPlugin.ApiClient.CodeGen
         /// </summary>
         public void GenerateFiles()
         {
+            try
+            {
+                if (!Directory.Exists(_settings.OutputPath))
+                    Directory.CreateDirectory(_settings.OutputPath);
 
-            //TODO: Write files
+                _langCodeGen.GetClientCode()
+                            .ToList()
+                            .ForEach(c => {                                
+                                var fileName = Path.Combine(_settings.OutputPath, $"{c.ClientName}.{_langCodeGen.FileExtension}");
 
+                                Console.WriteLine($"Writing file '{c.ClientName}.{_langCodeGen.FileExtension}' to '{_settings.OutputPath}'");
 
-
-
+                                using (TextWriter tw = new StreamWriter(fileName))
+                                {
+                                    tw.WriteLine(c.Code);
+                                    tw.Flush();
+                                }
+                            });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

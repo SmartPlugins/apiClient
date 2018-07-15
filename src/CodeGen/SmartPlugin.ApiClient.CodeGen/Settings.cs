@@ -84,8 +84,7 @@ namespace SmartPlugin.ApiClient.CodeGen
                 }
             }
         }
-
-
+        
         /// <summary>
         /// Gets or sets the additional namespaces.
         /// </summary>
@@ -142,9 +141,5 @@ namespace SmartPlugin.ApiClient.CodeGen
         }
     }
 
-    public enum Language
-    {
-        CSharp=0,
-        //TypeScript=1
-    }
+    
 }

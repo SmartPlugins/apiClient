@@ -13,6 +13,14 @@
     <PackageTags>SmartPlugin ApiClient (HttpClient)</PackageTags>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <LangVersion>7.1</LangVersion>
+  </PropertyGroup>
+
   <ItemGroup>
     <None Remove="Templates\CSharp\Client.Class.liquid" />
     <None Remove="Templates\CSharp\Client.Interface.Body.liquid" />

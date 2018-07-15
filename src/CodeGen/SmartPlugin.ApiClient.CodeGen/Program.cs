@@ -28,8 +28,8 @@ namespace SmartPlugin.ApiClient.CodeGen
         /// <param name="settings">The settings.</param>
         private static void InvokeCodeGen(Settings settings)
         {
-           // settings.ApiSpecPath = @"C:\Temp\EACH\Jasaon.json";
-            settings.ApiSpecUri = @"https://petstore.swagger.io/v2/swagger.json";
+            settings.ApiSpecPath = @"C:\Temp\EACH.json";
+           // settings.ApiSpecUri = @"https://petstore.swagger.io/v2/swagger.json";
 
             if (string.IsNullOrEmpty(settings.ApiSpecPath) && string.IsNullOrEmpty(settings.ApiSpecUri))
                 Console.WriteLine("Neither of Api specification file/Uri has been specified for the client generation.");
